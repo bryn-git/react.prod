@@ -1,0 +1,16 @@
+services:
+  frontend:
+    # stdin_open: true
+    # tty: true
+    build: 
+    context: .
+    dockerfile: Dockerfile.dev
+    container_name: frontend_cont
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app/src
+    environment:
+      - REACT_APP_API_URL=http://localhost:8080/api 
+    # env_file:
+    #   - ./.env
