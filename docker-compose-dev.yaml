@@ -10,7 +10,7 @@ services:
       - "3000:3000"
     volumes:
       - ./src:/app/src
-    environment:
-      - REACT_APP_API_URL=http://localhost:8080/api 
+    args:
+      - REACT_APP_API_URL=http://localhost:8080/api
     # env_file:
     #   - ./.env

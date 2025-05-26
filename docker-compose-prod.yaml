@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile.prod
       args:
-      - REACT_APP_API_URL=http://localhost:8080/api
+      - REACT_APP_API_URL=/api
     container_name: frontend_app
     ports:
       - "8081:80"
@@ -22,7 +22,9 @@ services:
       - "8082:80"
     volumes:
       - ./dist:/usr/share/nginx/html 
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    environment:
+      - REACT_APP_API_URL=/api
     depends_on:
     - frontend
     networks:
