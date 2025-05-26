@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const isAuthenticated = !!token;
 
+  // Initialize auth state
   useEffect(() => {
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("user");
@@ -42,7 +43,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const authToken = token || localStorage.getItem("token");
     if (!authToken) throw new Error("No authentication token found");
 
-    const response = await fetch(url, {
+    const fullUrl = `${process.env.REACT_APP_API_URL}${url}`;
+    const response = await fetch(fullUrl, {
       ...options,
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -65,39 +67,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const register = async (name: string, email: string, password: string) => {
-    try {
-      const response = await fetch("/api/register", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
-      });
+  try {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password }),
+    });
 
-      const contentType = response.headers.get('content-type');
-      if (!contentType?.includes('application/json')) {
-        const text = await response.text();
-        throw new Error(`Expected JSON but got: ${text.substring(0, 50)}...`);
-      }
-
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
-      }
-
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      navigate('/dashboard');
-      
-      return data;
-    } catch (error) {
-      console.error('Registration error:', error);
-      throw error;
+    // Cek content-type sebelum parse
+    const contentType = response.headers.get('content-type');
+    if (!contentType?.includes('application/json')) {
+      const text = await response.text();
+      throw new Error(`Expected JSON but got: ${text.substring(0, 50)}...`);
     }
-  };
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.message || 'Registration failed');
+    }
+
+
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    navigate('/dashboard');
+    
+    return data;
+  } catch (error) {
+    console.error('Registration error:', error);
+    throw error; // Ditangkap oleh komponen
+  }
+};
+
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch("/api/login", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -126,7 +131,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoggingOut(true);
     try {
       if (token) {
-        await fetch("/api/logout", {
+        await fetch(`${process.env.REACT_APP_API_URL}/logout`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
