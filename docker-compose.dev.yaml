@@ -3,14 +3,14 @@ services:
     # stdin_open: true
     # tty: true
     build: 
-    context: .
-    dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+      - VITE_REACT_API_URL=http://127.0.0.1:8080/api
     container_name: frontend_cont
     ports:
-      - "3000:3000"
+      - "8002:8002"
     volumes:
       - ./src:/app/src
-    args:
-      - REACT_APP_API_URL=http://localhost:8080/api
     # env_file:
     #   - ./.env

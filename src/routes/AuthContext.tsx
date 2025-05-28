@@ -28,7 +28,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const isAuthenticated = !!token;
 
-  // Initialize auth state
   useEffect(() => {
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("user");
@@ -43,7 +42,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const authToken = token || localStorage.getItem("token");
     if (!authToken) throw new Error("No authentication token found");
 
-    const fullUrl = `${process.env.REACT_APP_API_URL}${url}`;
+    const fullUrl = `${import.meta.env.VITE_REACT_API_URL}${url}`;
     const response = await fetch(fullUrl, {
       ...options,
       headers: {
@@ -68,13 +67,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const register = async (name: string, email: string, password: string) => {
   try {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/register`, {
+    const response = await fetch(`${import.meta.env.VITE_REACT_API_URL}/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, password }),
     });
 
-    // Cek content-type sebelum parse
     const contentType = response.headers.get('content-type');
     if (!contentType?.includes('application/json')) {
       const text = await response.text();
@@ -95,14 +93,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return data;
   } catch (error) {
     console.error('Registration error:', error);
-    throw error; // Ditangkap oleh komponen
+    throw error; 
   }
 };
 
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
+      const response = await fetch(`${import.meta.env.VITE_REACT_API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -131,7 +129,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoggingOut(true);
     try {
       if (token) {
-        await fetch(`${process.env.REACT_APP_API_URL}/logout`, {
+        await fetch(`${import.meta.env.VITE_REACT_API_URL}/logout`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
