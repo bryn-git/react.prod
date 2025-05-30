@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getProjectEnvVariables } from "../shared/projectEnvVariables";
 
 interface User {
   id: string;
@@ -18,6 +19,7 @@ interface AuthContextType {
   fetchWithAuth: (url: string, options?: RequestInit) => Promise<any>;
 }
 
+const projectEnvVariables = getProjectEnvVariables();
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -42,7 +44,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const authToken = token || localStorage.getItem("token");
     if (!authToken) throw new Error("No authentication token found");
 
-    const fullUrl = `${import.meta.env.VITE_REACT_API_URL}${url}`;
+    const fullUrl = `${projectEnvVariables.envVariables.VITE_REACT_API_URL}${url}`;
     const response = await fetch(fullUrl, {
       ...options,
       headers: {
@@ -68,7 +70,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const register = async (name: string, email: string, password: string) => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_REACT_API_URL}/register`, {
+    const response = await fetch(`${projectEnvVariables.envVariables.VITE_REACT_API_URL}/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, password }),
@@ -105,7 +107,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_REACT_API_URL}/login`, {
+      const response = await fetch(`${projectEnvVariables.envVariables.VITE_REACT_API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -135,7 +137,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoggingOut(true);
     try {
       if (token) {
-        await fetch(`${import.meta.env.VITE_REACT_API_URL}/logout`, {
+        await fetch(`${projectEnvVariables.envVariables.VITE_REACT_API_URL}/logout`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,

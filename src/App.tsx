@@ -8,6 +8,8 @@ import ForgotPassword from "./components/ForgotPassword";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import Logout from "./components/Logout";
 
+// const envVariables = getProjectEnvVariables();
+
 function App() {
   return (
     <Routes>
